@@ -1,0 +1,67 @@
+<beans:beans xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:jee="http://www.springframework.org/schema/jee"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd">
+
+	<context:annotation-config />
+	<context:component-scan base-package="up.fiz"></context:component-scan>
+	<tx:annotation-driven proxy-target-class="true" />
+
+	<beans:bean
+		class="org.springframework.context.annotation.CommonAnnotationBeanPostProcessor">
+		<beans:property name="alwaysUseJndiLookup" value="true" />
+	</beans:bean>
+	
+	<beans:bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">
+		<beans:property name="scopes">
+			<beans:map>
+				<beans:entry key="view">
+					<beans:bean class="up.fiz.controller.ViewScope" />
+				</beans:entry>
+			</beans:map>
+		</beans:property>
+	</beans:bean>
+
+	<!-- Data Source Connection -->
+	<beans:bean id="sessionFactory"
+		class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+		<beans:property name="packagesToScan" value="up.fiz.model"></beans:property>
+		<beans:property name="hibernateProperties">
+			<beans:props>
+				<beans:prop key="hibernate.connection.provider_class">org.hibernate.service.jdbc.connections.internal.C3P0ConnectionProvider
+				</beans:prop>
+				<beans:prop key="hibernate.connection.driver_class">com.mysql.jdbc.Driver</beans:prop>
+				<beans:prop key="hibernate.connection.url">jdbc:mysql://localhost/fiz</beans:prop>
+				<beans:prop key="hibernate.connection.username">root</beans:prop>
+				<beans:prop key="hibernate.connection.password">502011</beans:prop>
+				<beans:prop key="hibernate.connection.pool_size">20</beans:prop>
+				<beans:prop key="hibernate.connection.autocommit">false</beans:prop>
+				<beans:prop key="hibernate.generate_statistics">false</beans:prop>
+				<beans:prop key="hibernate.hbm2ddl.auto">update</beans:prop>
+				<beans:prop key="hibernate.jdbc.batch_size">50</beans:prop>
+				<beans:prop key="hibernate.order_inserts">true</beans:prop>
+				<beans:prop key="hibernate.order_updates">true</beans:prop>
+				<beans:prop key="hibernate.jdbc.batch_versioned_data">true</beans:prop>
+				<beans:prop key="bonecp.idleConnectionTestPeriod">60</beans:prop>
+				<beans:prop key="bonecp.minPoolSize">5</beans:prop>
+				<beans:prop key="bonecp.maxPoolSize">20</beans:prop>
+				<beans:prop key="bonecp.automaticTestTable">DTM_MESSAGE_HEADER</beans:prop>
+				<beans:prop key="hibernate.show_sql">true</beans:prop>
+			</beans:props>
+		</beans:property>
+	</beans:bean>
+
+	<!-- Transaction Manager -->
+	<beans:bean id="transactionManager"
+		class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+		<beans:property name="sessionFactory" ref="sessionFactory" />
+	</beans:bean>
+
+</beans:beans>
